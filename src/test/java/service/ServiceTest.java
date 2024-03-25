@@ -25,8 +25,22 @@ class ServiceTest {
     private TemaXMLRepository temaXMLRepository;
     private NotaXMLRepository notaXMLRepository;
 
-    static void createXML() {
+    static void createStudentsXML() {
         File xml = new File("test_studenti.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<inbox>\n" +
+                    "\n" +
+                    "</inbox>");
+            writer.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void createAssignmentsXML() {
+        File xml = new File("test_teme.xml");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                     "<inbox>\n" +
@@ -41,13 +55,14 @@ class ServiceTest {
 
     @BeforeEach
     void setUp(){
-        createXML();
+        createStudentsXML();
+        createAssignmentsXML();
         Validator<Student> studentValidator = new StudentValidator();
         Validator<Tema> temaValidator = new TemaValidator();
         Validator<Nota> notaValidator = new NotaValidator();
 
         studentXMLRepository = new StudentXMLRepository(studentValidator, "test_studenti.xml");
-        temaXMLRepository = new TemaXMLRepository(temaValidator, "teme.xml");
+        temaXMLRepository = new TemaXMLRepository(temaValidator, "test_teme.xml");
         notaXMLRepository = new NotaXMLRepository(notaValidator, "note.xml");
 
         service = new Service(studentXMLRepository, temaXMLRepository, notaXMLRepository);
@@ -55,7 +70,8 @@ class ServiceTest {
 
     @AfterEach
     void removeXML() {
-        new File("fisiere/studentiTest.xml").delete();
+        new File("test_studenti.xml").delete();
+        new File("test_note.xml").delete();
     }
 
     @org.junit.jupiter.api.Test
@@ -168,5 +184,20 @@ class ServiceTest {
         assertEquals(students.next().getID(), "1");
 
         this.service.deleteStudent("1");
+    }
+
+    /**
+     * Test add assignments
+     */
+    @org.junit.jupiter.api.Test
+    public void test_save_tema_valid_identifier()
+    {
+        assertEquals(this.service.saveTema("1", "Web API an controller", 12, 10), 0);
+    }
+
+    @org.junit.jupiter.api.Test
+    public void test_save_tema_invalid_identifier()
+    {
+        assertEquals(this.service.saveTema(null, "Web API an controller", 12, 10), 1);
     }
 }
