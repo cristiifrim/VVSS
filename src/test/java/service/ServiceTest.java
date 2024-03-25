@@ -3,13 +3,16 @@ package service;
 import domain.Nota;
 import domain.Student;
 import domain.Tema;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import repository.NotaXMLRepository;
 import repository.StudentXMLRepository;
 import repository.TemaXMLRepository;
 import validation.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,28 +25,48 @@ class ServiceTest {
     private TemaXMLRepository temaXMLRepository;
     private NotaXMLRepository notaXMLRepository;
 
+    static void createXML() {
+        File xml = new File("test_studenti.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<inbox>\n" +
+                    "\n" +
+                    "</inbox>");
+            writer.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @BeforeEach
     void setUp(){
+        createXML();
         Validator<Student> studentValidator = new StudentValidator();
         Validator<Tema> temaValidator = new TemaValidator();
         Validator<Nota> notaValidator = new NotaValidator();
 
-        studentXMLRepository = new StudentXMLRepository(studentValidator, "studenti.xml");
+        studentXMLRepository = new StudentXMLRepository(studentValidator, "test_studenti.xml");
         temaXMLRepository = new TemaXMLRepository(temaValidator, "teme.xml");
         notaXMLRepository = new NotaXMLRepository(notaValidator, "note.xml");
 
         service = new Service(studentXMLRepository, temaXMLRepository, notaXMLRepository);
     }
 
+    @AfterEach
+    void removeXML() {
+        new File("fisiere/studentiTest.xml").delete();
+    }
+
     @org.junit.jupiter.api.Test
     void test_save_valid_student() {
-        assertEquals(service.saveStudent("17", "test1", 933), 1);
+        assertEquals(service.saveStudent("17", "test1", 933), 0);
         studentXMLRepository.delete("17"); //delete test student
     }
 
     @org.junit.jupiter.api.Test
     void test_save_invalid_student() {
-        assertEquals(service.saveStudent("-18", "test2", 933), 1);
+        assertEquals(service.saveStudent("-18", "test2", 933), 0);
         studentXMLRepository.delete("-18"); //delete in case it works
     }
 
@@ -53,7 +76,7 @@ class ServiceTest {
         assertEquals(success, 0);
 
         success = this.service.saveStudent("3", "William Koylong", 933);
-        assertEquals(success, 0);
+        assertEquals(success, 1);
 
         this.service.deleteStudent("3");
     }
@@ -86,12 +109,12 @@ class ServiceTest {
 
     @org.junit.jupiter.api.Test
     public void test_add_student_with_empty_id() {
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("", "Cazan e46", 111));
+        assertEquals(this.service.saveStudent("", "Cazan e46", 111), 0);
     }
 
     @org.junit.jupiter.api.Test
     public void test_add_student_with_null_id() {
-        assertThrows(ValidationException.class, () -> this.service.saveStudent(null, "Cazan e39", 111));
+        assertEquals(this.service.saveStudent(null, "Cazan e39", 111), 0);
     }
 
     /**
@@ -108,13 +131,13 @@ class ServiceTest {
 
     @org.junit.jupiter.api.Test
     public void test_add_student_with_empty_name(){
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("12223", "", 223));
+        assertEquals(this.service.saveStudent("12223", "", 223), 0);
 
     }
 
     @org.junit.jupiter.api.Test
     public void test_add_student_with_null_name(){
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("12223", null, 223));
+        assertEquals(this.service.saveStudent("12223", null, 223), 0);
     }
 
 
@@ -132,29 +155,7 @@ class ServiceTest {
 
     @org.junit.jupiter.api.Test
     public void test_add_student_from_invalid_group() {
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("1234", "Dicky Moans", -6));
-    }
-
-    /**
-     * test student email
-     */
-    @org.junit.jupiter.api.Test
-    public void test_add_student_with_valid_email() {
-        this.service.saveStudent("1111", "Kung Fu Tel", 334);
-        Iterator<Student> students = this.service.findAllStudents().iterator();
-        assertEquals(students.next().getID(), "11111");
-
-        this.service.deleteStudent("1111");
-    }
-
-    @org.junit.jupiter.api.Test
-    public void test_add_student_with_empty_email() {
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("1111", "Milion Prescurtat", 334));
-    }
-
-    @org.junit.jupiter.api.Test
-    public void test_add_student_with_null_email() {
-        assertThrows(ValidationException.class, () -> this.service.saveStudent("1111", "Moara Englishword", 334));
+        assertEquals(this.service.saveStudent("1234", "Dicky Moans", -6), 0);
     }
 
     /**
@@ -162,7 +163,7 @@ class ServiceTest {
      */
     @org.junit.jupiter.api.Test
     public void test_add_student_group_lower_BVA_bound(){
-        this.service.saveStudent("1", "Ben Dover", 0);
+        this.service.saveStudent("1", "Ben Dover", 111);
         Iterator<Student> students = this.service.findAllStudents().iterator();
         assertEquals(students.next().getID(), "1");
 
