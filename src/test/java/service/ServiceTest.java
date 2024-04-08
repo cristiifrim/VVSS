@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -199,5 +200,46 @@ class ServiceTest {
     public void test_save_tema_invalid_identifier()
     {
         assertEquals(this.service.saveTema(null, "Web API an controller", 12, 10), 1);
+    }
+
+    @Test
+    public void test_save_tema_valid_entity() {
+        assertDoesNotThrow(() -> service.saveTema("1", "description", 14, 1));
+
+        Tema addedAssignment = service.findAllTeme().iterator().next();
+        assertNotNull(addedAssignment);
+
+        assertEquals(addedAssignment.getID(), "1");
+        assertEquals(addedAssignment.getDescriere(), "description");
+        assertEquals(addedAssignment.getDeadline(), 14);
+        assertEquals(addedAssignment.getStartline(), 1);
+    }
+
+    @Test
+    public void test_tema_fail_invalid_id() {
+        assertThrows(ValidationException.class, () -> service.saveTema(null, "description", 14, 1), "ID invalid! \n");
+    }
+
+    @Test
+    public void test_tema_fail_invalid_description() {
+        assertThrows(ValidationException.class, () -> service.saveTema("1", null, 14, 1), "Descriere invalida!\n");
+    }
+
+    @Test
+    public void test_tema_fail_invalid_deadline() {
+        assertThrows(ValidationException.class, () -> service.saveTema("1", "description", 0, 1), "Deadline invalid!\n");
+    }
+
+    @Test
+    public void test_tema_fail_invalid_startline() {
+        assertThrows(ValidationException.class, () -> service.saveTema("1", "description", 14, 0), "Data de primire invalida!\n");
+    }
+
+    @Test
+    public void test_tema_fail_entity_with_id_already_present() {
+        assertThrows(ValidationException.class, () -> {
+            service.saveTema("1", "description", 14, 1);
+            service.saveTema("1", "Another Description", 14, 1);
+        });
     }
 }
