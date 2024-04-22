@@ -19,13 +19,13 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ServiceTest {
+public class ServiceTest {
     private Service service;
     private StudentXMLRepository studentXMLRepository;
     private TemaXMLRepository temaXMLRepository;
     private NotaXMLRepository notaXMLRepository;
 
-    static void createStudentsXML() {
+    public static void createStudentsXML() {
         File xml = new File("test_studenti.xml");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
@@ -39,8 +39,22 @@ class ServiceTest {
         }
     }
 
-    static void createAssignmentsXML() {
+    public static void createAssignmentsXML() {
         File xml = new File("test_teme.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<inbox>\n" +
+                    "\n" +
+                    "</inbox>");
+            writer.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createGradesXML() {
+        File xml = new File("test_note.xml");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(xml))) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                     "<inbox>\n" +
