@@ -62,6 +62,6 @@ public class LoginWithGoodCredentialsStory {
         cristi.types_email(getEmail());
         cristi.types_password(getPassword());
         cristi.submits_credentials();
-        cristi.should_see_the_username(getUsername());
+        cristi.should_see_captcha_security();
     }
 }

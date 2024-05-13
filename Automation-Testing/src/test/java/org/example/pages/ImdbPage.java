@@ -81,8 +81,8 @@ public class ImdbPage extends PageObject {
         signInRealButton.click();
     }
 
-    public String getCurrentUserLoggedIn() {
-        return find(By.className("navbar__user-name")).getText();
+    public String getCaptchaSecurity() {
+        return find(By.className("cvf-captcha-img")).getText();
     }
 
     public String getAlertPrompt() {

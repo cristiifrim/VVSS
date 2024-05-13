@@ -54,8 +54,8 @@ public class EndUserStepsImdb {
     }
 
     @Step
-    public void should_see_the_username(String username) {
-        assertThat(imdbPage.getCurrentUserLoggedIn(), equalTo(username));
+    public void should_see_captcha_security() {
+        imdbPage.getCaptchaSecurity();
     }
 
     @Step
