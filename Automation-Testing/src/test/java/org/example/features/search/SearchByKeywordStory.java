@@ -37,6 +37,24 @@ public class SearchByKeywordStory {
         anna.should_see_definition("An edible fruit produced by the pear tree, similar to an apple but elongated towards the stem.");
     }
 
+    @Issue("#WIKI-2")
+    @Test
+    public void searching_by_keyword_hook_should_give_definition_for_fishing_hook()
+    {
+        anna.is_the_home_page();
+        anna.looks_for("hook");
+        anna.should_see_definition("A rod bent into a curved shape, typically with one end free and the other end secured to a rope or other attachment.");
+    }
+
+    @Issue("#WIKI-3")
+    @Test
+    public void searching_by_keyword_Galati_should_give_definition_for_worst_city_in_romania_that_has_burger_king_fish_and_pimps()
+    {
+        anna.is_the_home_page();
+        anna.looks_for("Galați");
+        anna.should_see_definition("A city in Galați, Romania");
+    }
+
     @Pending @Test
     public void searching_by_ambiguious_keyword_should_display_the_disambiguation_page() {
     }
